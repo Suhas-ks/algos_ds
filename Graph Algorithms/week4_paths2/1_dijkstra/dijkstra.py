@@ -93,10 +93,9 @@ class Worker(object):
 
 class MinHeap(object):
 
-    def __init__(self, arr, dist_ref):
+    def __init__(self, arr):
         self.size = len(arr)
         self.heap_size = self.size
-        self.dist_ref = dist_ref
         self.heap = list(arr)
         self.build_min_heap()
 
@@ -335,17 +334,20 @@ class Graph(object):
     def dijkstra(self, src):
         self.reset_visit_flags()
         self.reset_dist_prev()
+        self.rev_dist = self.create_reverse_dist()
         self.region = set()
         self.dist[src] = 0
         self.region.add(src)
-        heap = MinHeap(self.dist.values())
+        heap = MinHeap(self.dist.values()) # build heap on self.dist keys...in the heap compare distances by indexing the hash map
         while len(heap):
-            u = self.nodes_list[heap.extract_min()]
+            u = heap.extract_min()
+            u = self.rev_dist.pop(u)
             self.region.add(u)
             for v in self.nodes[u]:
                 if self.dist[v] > self.dist[u] + self.weights[(u, v)]:
                     self.dist[v] = self.dist[u] + self.weights[(u, v)]
-                    heap.decrease_priority(v, self.dist[v])
+                    self.rev_dist[self.dist[v]] = v
+                    heap.decrease_priority(v., self.dist[v])
 
 
 
