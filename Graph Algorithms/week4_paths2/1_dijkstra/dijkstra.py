@@ -119,7 +119,7 @@ class MinHeap(object):
     def min_heapify(self, i):
         index = i
         l = self.left_child(i)
-        if l <= self.heap_size - 1 and self.heap[] < self.heap[index]:
+        if l <= self.heap_size - 1 and self.heap[l] < self.heap[index]:
             index = l
         r = self.right_child(i)
         if r <= self.heap_size - 1 and self.heap[r] < self.heap[index]:
@@ -320,6 +320,9 @@ class Graph(object):
                 q.enqueue(node)
 
 
+    def create_reverse_dist(self):
+        return {d:node for node,d in self.dist.items()}
+
     def reconstruct_shortest_path(self, src, u):
         result = []
         self.breadth_first_search(src)
@@ -335,7 +338,7 @@ class Graph(object):
         self.region = set()
         self.dist[src] = 0
         self.region.add(src)
-        heap = MinHeap(self.dist)
+        heap = MinHeap(self.dist.values())
         while len(heap):
             u = self.nodes_list[heap.extract_min()]
             self.region.add(u)
