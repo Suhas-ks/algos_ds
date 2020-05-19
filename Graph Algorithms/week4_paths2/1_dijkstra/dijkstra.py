@@ -1,6 +1,7 @@
-#Uses python3
+# Uses python3
 
 import sys
+
 
 class Stack(object):
     def __init__(self):
@@ -67,6 +68,7 @@ class Queue(object):
     def __len__(self):
         return len(self.first) + len(self.second)
 
+
 class Worker(object):
 
     def __init__(self, value, dist):
@@ -91,10 +93,11 @@ class Worker(object):
     def __ne__(self, other):
         return self.dist != other.dist
 
+
 class MinHeap(object):
 
     def __init__(self, arr, key=lambda x: x):
-        self.key=key
+        self.key = key
         self.size = len(arr)
         self.heap_size = self.size
         self.heap = list(arr)
@@ -119,10 +122,10 @@ class MinHeap(object):
     def min_heapify(self, i):
         index = i
         l = self.left_child(i)
-        if l <= self.heap_size - 1 and self.key(self.heap[l]) < self.key(self.heap[index]):
+        if l <= self.heap_size - 1 and self.heap[l] < self.heap[index]:
             index = l
         r = self.right_child(i)
-        if r <= self.heap_size - 1 and self.key(self.heap[r]) < self.key(self.heap[index]):
+        if r <= self.heap_size - 1 and self.heap[r] < self.heap[index]:
             index = r
         if i != index:
             self.heap[i], self.heap[index] = self.heap[index], self.heap[i]
@@ -171,7 +174,7 @@ class MinHeap(object):
         return remove
 
     def sift_up(self, i):
-        while i > 0 and self.key(self.heap[self.parent(i)]) > self.key(self.heap[i]):
+        while i > 0 and self.heap[self.parent(i)] > self.heap[i]:
             self.heap[self.parent(i)], self.heap[i] = self.heap[i], self.heap[self.parent(i)]
             i = self.parent(i)
 
@@ -188,6 +191,7 @@ class MinHeap(object):
         self.heap.append(p)
         self.sift_up(self.heap_size - 1)
 
+
 class Graph(object):
     class Vertex(object):
         def __init__(self, value):
@@ -198,7 +202,7 @@ class Graph(object):
             self.component_id = None
             self.color = None
             self.prev = None
-            self.dist = 10**5
+            self.dist = 10 ** 5
 
         def __str__(self):
             return str(self.value)
@@ -244,8 +248,6 @@ class Graph(object):
 
         def __floordiv__(self, other):
             return float(self) // float(other)
-
-
 
     def __init__(self):
         self.nodes = {}
@@ -313,7 +315,7 @@ class Graph(object):
 
     def reset_dist_prev(self):
         for node in self.nodes.keys():
-            node.dist = 10**5
+            node.dist = 10 ** 5
             node.prev = None
 
     def breadth_first_search(self, src):
@@ -343,11 +345,14 @@ class Graph(object):
 
     def reconstruct_shortest_path(self, src, u):
         result = []
-        self.breadth_first_search(src)
-        while u != src and u != None:
+        # self.breadth_first_search(src)
+        while u != src and u.value != None:
             result.append(u)
             u = u.prev
-        return reversed(result)
+        if result[0] == src and result[-1] == u:
+            return reversed(result)
+        else:
+            return None
 
     def relax(self, u, v):
         if v.dist > u.dist + self.weights[(u, v)]:
@@ -360,20 +365,18 @@ class Graph(object):
         self.region = set()
         src.dist = 0
         self.region.add(src)
-        heap = MinHeap(self.nodes, key=lambda x: x.dist) # build heap on self.dist keys...in the heap compare distances by indexing the hash map
+        heap = MinHeap(self.nodes, key=lambda
+            x: x.dist)  # build heap on self.dist keys...in the heap compare distances by indexing the hash map
         while len(heap):
             # flag = False
-            u = heap.extract_min()
+            u = heap.get_minimum
             self.region.add(u)
             for v in self.nodes[u]:
                 self.relax(u, v)
-                    # flag = True
+            heap.extract_min()
+                # flag = True
             # if flag:
-                # heap.build_min_heap()
-
-
-
-
+            # heap.build_min_heap()
 
     def read(self):
         self.num_nodes, self.num_edges = map(int, input().split(' '))
@@ -397,22 +400,18 @@ class Graph(object):
             elif p == v:
                 self.v = nodes[p]
             self.nodes[nodes[p]].append(nodes[q])
-            self.weights[(nodes[p],nodes[q])] = e
+            self.weights[(nodes[p], nodes[q])] = e
         self.nodes_list = nodes
-
-
 
 
 if __name__ == '__main__':
     g = Graph()
     g.read()
     g.dijkstra(g.u)
-    if g.v.dist < 10**5:
+    if g.v.dist < 10 ** 5:
         print(g.v.dist)
     else:
         print(-1)
-
-
 
 # 3
 
@@ -444,3 +443,17 @@ if __name__ == '__main__':
 # 1 3 5
 # 2 3 2
 # 3 2
+
+# 9
+
+# 10 9
+# 1 2 1
+# 5 6 1
+# 6 7 1
+# 8 9 1
+# 9 10 1
+# 3 4 1
+# 7 8 1
+# 4 5 1
+# 2 3 1
+# 1 10
