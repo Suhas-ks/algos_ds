@@ -68,6 +68,7 @@ class Queue(object):
     def __len__(self):
         return len(self.first) + len(self.second)
 
+
 class MinHeap(object):
 
     def __init__(self, arr, key=lambda x: x):
@@ -96,10 +97,10 @@ class MinHeap(object):
     def min_heapify(self, i):
         index = i
         l = self.left_child(i)
-        if l <= self.heap_size - 1 and self.heap[l] < self.heap[index]:
+        if l <= self.heap_size - 1 and self.key(self.heap[l]) < self.key(self.heap[index]):
             index = l
         r = self.right_child(i)
-        if r <= self.heap_size - 1 and self.heap[r] < self.heap[index]:
+        if r <= self.heap_size - 1 and self.key(self.heap[r]) < self.key(self.heap[index]):
             index = r
         if i != index:
             self.heap[i], self.heap[index] = self.heap[index], self.heap[i]
@@ -148,7 +149,7 @@ class MinHeap(object):
         return remove
 
     def sift_up(self, i):
-        while i > 0 and self.heap[self.parent(i)] > self.heap[i]:
+        while i > 0 and self.key(self.heap[self.parent(i)]) > self.key(self.heap[i]):
             self.heap[self.parent(i)], self.heap[i] = self.heap[i], self.heap[self.parent(i)]
             i = self.parent(i)
 
@@ -293,7 +294,6 @@ class Graph(object):
             node.dist = 10 ** 5
             node.prev = None
 
-
     def breadth_first_search(self, src):
         q = Queue()
         self.reset_dist_prev()
@@ -344,15 +344,12 @@ class Graph(object):
         self.region = set()
         src.dist = 0
         self.region.add(src)
-        self.heap = MinHeap(self.nodes, key=lambda
-            x: x.dist)  # build heap on self.dist keys...in the heap compare distances by indexing the hash map
+        self.heap = MinHeap([src], key=lambda x: x.dist)
         while len(self.heap):
             u = self.heap.extract_min()
             self.region.add(u)
             for v in self.nodes[u]:
                 self.relax(u, v)
-
-
 
     def read(self):
         self.num_nodes, self.num_edges = map(int, input().split(' '))
@@ -384,10 +381,10 @@ if __name__ == '__main__':
     g = Graph()
     g.read()
     g.dijkstra(g.u)
-    if g.v.dist < 10 ** 5:
-        print(g.v.dist)
-    else:
+    if g.v.dist == 10 ** 5:
         print(-1)
+    else:
+        print(g.v.dist)
 
 # 3
 
