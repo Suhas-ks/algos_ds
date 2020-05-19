@@ -68,32 +68,6 @@ class Queue(object):
     def __len__(self):
         return len(self.first) + len(self.second)
 
-
-class Worker(object):
-
-    def __init__(self, value, dist):
-        self.value = value
-        self.dist = dist
-
-    def __lt__(self, other):
-        return self.dist < other.dist
-
-    def __gt__(self, other):
-        return self.dist > other.dist
-
-    def __le__(self, other):
-        return self.dist <= other.dist
-
-    def __ge__(self, other):
-        return self.dist >= other.dist
-
-    def __eq__(self, other):
-        return self.dist == other.dist
-
-    def __ne__(self, other):
-        return self.dist != other.dist
-
-
 class MinHeap(object):
 
     def __init__(self, arr, key=lambda x: x):
@@ -202,6 +176,7 @@ class Graph(object):
             self.component_id = None
             self.color = None
             self.prev = None
+            self.heap_index = None
             self.dist = 10 ** 5
 
         def __str__(self):
@@ -217,10 +192,10 @@ class Graph(object):
             return float(self.value)
 
         def __eq__(self, other):
-            return self.value == other.value
+            return self.value == other.value if other != None else False
 
         def __ne__(self, other):
-            return self.value != other.value
+            return self.value != other.value if other != None else True
 
         def __lt__(self, other):
             return self.value < other.value
@@ -318,6 +293,7 @@ class Graph(object):
             node.dist = 10 ** 5
             node.prev = None
 
+
     def breadth_first_search(self, src):
         q = Queue()
         self.reset_dist_prev()
@@ -355,9 +331,12 @@ class Graph(object):
             return None
 
     def relax(self, u, v):
+        # if u.prev == v:
+        #     return
         if v.dist > u.dist + self.weights[(u, v)]:
             v.dist = u.dist + self.weights[(u, v)]
             v.prev = u
+            self.heap.insert(v)
 
     def dijkstra(self, src):
         self.reset_visit_flags()
@@ -365,18 +344,15 @@ class Graph(object):
         self.region = set()
         src.dist = 0
         self.region.add(src)
-        heap = MinHeap(self.nodes, key=lambda
+        self.heap = MinHeap(self.nodes, key=lambda
             x: x.dist)  # build heap on self.dist keys...in the heap compare distances by indexing the hash map
-        while len(heap):
-            # flag = False
-            u = heap.get_minimum
+        while len(self.heap):
+            u = self.heap.extract_min()
             self.region.add(u)
             for v in self.nodes[u]:
                 self.relax(u, v)
-            heap.extract_min()
-                # flag = True
-            # if flag:
-            # heap.build_min_heap()
+
+
 
     def read(self):
         self.num_nodes, self.num_edges = map(int, input().split(' '))
@@ -457,3 +433,46 @@ if __name__ == '__main__':
 # 4 5 1
 # 2 3 1
 # 1 10
+
+# 3
+
+# 5 5
+# 1 2 5
+# 2 3 1
+# 3 4 1
+# 4 5 1
+# 3 5 2
+# 2 5
+
+# 21
+
+# 9 28
+# 1 2 4
+# 2 1 4
+# 1 8 8
+# 8 1 8
+# 2 8 11
+# 8 2 11
+# 2 3 8
+# 3 2 8
+# 8 9 7
+# 9 8 7
+# 8 7 1
+# 7 8 1
+# 3 9 2
+# 9 3 2
+# 9 7 6
+# 7 9 6
+# 3 4 7
+# 4 3 7
+# 3 6 4
+# 6 3 4
+# 7 6 2
+# 6 7 2
+# 4 6 14
+# 6 4 14
+# 4 5 9
+# 5 4 9
+# 5 6 10
+# 6 5 10
+# 1 5
