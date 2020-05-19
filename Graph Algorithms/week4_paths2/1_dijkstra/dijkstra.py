@@ -93,7 +93,8 @@ class Worker(object):
 
 class MinHeap(object):
 
-    def __init__(self, arr):
+    def __init__(self, arr, key=lambda x: x):
+        self.key=key
         self.size = len(arr)
         self.heap_size = self.size
         self.heap = list(arr)
@@ -118,10 +119,10 @@ class MinHeap(object):
     def min_heapify(self, i):
         index = i
         l = self.left_child(i)
-        if l <= self.heap_size - 1 and self.heap[l] < self.heap[index]:
+        if l <= self.heap_size - 1 and self.key(self.heap[l]) < self.key(self.heap[index]):
             index = l
         r = self.right_child(i)
-        if r <= self.heap_size - 1 and self.heap[r] < self.heap[index]:
+        if r <= self.heap_size - 1 and self.key(self.heap[r]) < self.key(self.heap[index]):
             index = r
         if i != index:
             self.heap[i], self.heap[index] = self.heap[index], self.heap[i]
@@ -138,6 +139,14 @@ class MinHeap(object):
         self.size -= 1
         self.heap.pop()
         self.min_heapify(0)
+        return min_element
+
+    def extract_min_without_heapify(self):
+        min_element = self.heap[0]
+        self.heap[0] = self.heap[self.heap_size - 1]
+        self.heap_size -= 1
+        self.size -= 1
+        self.heap.pop()
         return min_element
 
     def extract_min_and_insert(self, p):
@@ -162,7 +171,7 @@ class MinHeap(object):
         return remove
 
     def sift_up(self, i):
-        while i > 0 and self.heap[self.parent(i)] > self.heap[i]:
+        while i > 0 and self.key(self.heap[self.parent(i)]) > self.key(self.heap[i]):
             self.heap[self.parent(i)], self.heap[i] = self.heap[i], self.heap[self.parent(i)]
             i = self.parent(i)
 
@@ -188,6 +197,8 @@ class Graph(object):
             self.post = None
             self.component_id = None
             self.color = None
+            self.prev = None
+            self.dist = 10**5
 
         def __str__(self):
             return str(self.value)
@@ -196,7 +207,7 @@ class Graph(object):
             return int(self.value)
 
         def __index__(self):
-            return self.__int__()
+            return int(self)
 
         def __float__(self):
             return float(self.value)
@@ -224,6 +235,17 @@ class Graph(object):
 
         def __repr__(self):
             return str(self)
+
+        def __mul__(self, other):
+            return int(self) * int(other)
+
+        def __truediv__(self, other):
+            return float(self) / float(other)
+
+        def __floordiv__(self, other):
+            return float(self) // float(other)
+
+
 
     def __init__(self):
         self.nodes = {}
@@ -290,15 +312,16 @@ class Graph(object):
         self.component_marker = 0
 
     def reset_dist_prev(self):
-        self.dist = {node: 10**5 for node in self.nodes.keys()}
-        self.previous = {node: None for node in self.nodes.keys()}
+        for node in self.nodes.keys():
+            node.dist = 10**5
+            node.prev = None
 
     def breadth_first_search(self, src):
         q = Queue()
         self.reset_dist_prev()
         self.reset_visit_flags()
         color = True
-        self.dist[src] = 0
+        src.dist = 0
         src.color = color
         q.enqueue(src)
         for node in self.nodes_list:
@@ -308,46 +331,43 @@ class Graph(object):
                 color = not u.color
                 for nbr in self.nodes[u]:
                     if not nbr.visited:
-                        if self.dist[nbr] == None:
+                        if nbr.dist == None:
                             nbr.color = color
                             q.enqueue(nbr)
-                            self.dist[nbr] = self.dist[u] + 1
-                            self.previous[nbr] = u
+                            nbr.dist = u.dist + 1
+                            nbr.prev = u
             if not node.visited:
                 color = True
                 node.color = color
                 q.enqueue(node)
-
-
-    def create_reverse_dist(self):
-        return {d:node for node,d in self.dist.items()}
 
     def reconstruct_shortest_path(self, src, u):
         result = []
         self.breadth_first_search(src)
         while u != src and u != None:
             result.append(u)
-            u = self.previous[u]
+            u = u.prev
         return reversed(result)
 
 
     def dijkstra(self, src):
         self.reset_visit_flags()
         self.reset_dist_prev()
-        self.rev_dist = self.create_reverse_dist()
         self.region = set()
-        self.dist[src] = 0
+        src.dist = 0
         self.region.add(src)
-        heap = MinHeap(self.dist.values()) # build heap on self.dist keys...in the heap compare distances by indexing the hash map
+        heap = MinHeap(self.nodes, key=lambda x: x.dist) # build heap on self.dist keys...in the heap compare distances by indexing the hash map
         while len(heap):
+            flag = False
             u = heap.extract_min()
-            u = self.rev_dist.pop(u)
             self.region.add(u)
             for v in self.nodes[u]:
-                if self.dist[v] > self.dist[u] + self.weights[(u, v)]:
-                    self.dist[v] = self.dist[u] + self.weights[(u, v)]
-                    self.rev_dist[self.dist[v]] = v
-                    heap.decrease_priority(v., self.dist[v])
+                if v.dist > u.dist + self.weights[(u, v)]:
+                    v.dist = u.dist + self.weights[(u, v)]
+                    flag = True
+            if flag:
+                heap.build_min_heap()
+
 
 
 
@@ -384,7 +404,7 @@ if __name__ == '__main__':
     g = Graph()
     g.read()
     g.dijkstra(g.u)
-    print(g.dist[g.v])
+    print(g.v.dist)
 
 
 
@@ -396,3 +416,17 @@ if __name__ == '__main__':
 # 2 3 2
 # 1 3 5
 # 1 3
+
+# 6
+
+# 5 9
+# 1 2 4
+# 1 3 2
+# 2 3 2
+# 3 2 1
+# 2 4 2
+# 3 5 4
+# 5 4 1
+# 2 5 3
+# 3 4 4
+# 1 5
