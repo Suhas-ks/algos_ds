@@ -349,6 +349,10 @@ class Graph(object):
             u = u.prev
         return reversed(result)
 
+    def relax(self, u, v):
+        if v.dist > u.dist + self.weights[(u, v)]:
+            v.dist = u.dist + self.weights[(u, v)]
+            v.prev = u
 
     def dijkstra(self, src):
         self.reset_visit_flags()
@@ -362,8 +366,7 @@ class Graph(object):
             u = heap.extract_min()
             self.region.add(u)
             for v in self.nodes[u]:
-                if v.dist > u.dist + self.weights[(u, v)]:
-                    v.dist = u.dist + self.weights[(u, v)]
+                self.relax(u, v)
                     # flag = True
             # if flag:
                 # heap.build_min_heap()
