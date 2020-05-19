@@ -358,15 +358,15 @@ class Graph(object):
         self.region.add(src)
         heap = MinHeap(self.nodes, key=lambda x: x.dist) # build heap on self.dist keys...in the heap compare distances by indexing the hash map
         while len(heap):
-            flag = False
+            # flag = False
             u = heap.extract_min()
             self.region.add(u)
             for v in self.nodes[u]:
                 if v.dist > u.dist + self.weights[(u, v)]:
                     v.dist = u.dist + self.weights[(u, v)]
-                    flag = True
-            if flag:
-                heap.build_min_heap()
+                    # flag = True
+            # if flag:
+                # heap.build_min_heap()
 
 
 
