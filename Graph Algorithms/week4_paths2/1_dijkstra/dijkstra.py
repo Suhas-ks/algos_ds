@@ -404,7 +404,10 @@ if __name__ == '__main__':
     g = Graph()
     g.read()
     g.dijkstra(g.u)
-    print(g.v.dist)
+    if g.v.dist < 10**5:
+        print(g.v.dist)
+    else:
+        print(-1)
 
 
 
@@ -430,3 +433,11 @@ if __name__ == '__main__':
 # 2 5 3
 # 3 4 4
 # 1 5
+
+# -1
+
+# 3 3
+# 1 2 7
+# 1 3 5
+# 2 3 2
+# 3 2
