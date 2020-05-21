@@ -77,6 +77,9 @@ class Graph(object):
             self.post = None
             self.component_id = None
             self.color = None
+            self.prev = None
+            self.heap_index = None
+            self.dist = -1
 
         def __str__(self):
             return str(self.value)
@@ -85,16 +88,16 @@ class Graph(object):
             return int(self.value)
 
         def __index__(self):
-            return self.__int__()
+            return int(self)
 
         def __float__(self):
             return float(self.value)
 
         def __eq__(self, other):
-            return self.value == other.value
+            return self.value == other.value if other != None else False
 
         def __ne__(self, other):
-            return self.value != other.value
+            return self.value != other.value if other != None else True
 
         def __lt__(self, other):
             return self.value < other.value
@@ -113,6 +116,15 @@ class Graph(object):
 
         def __repr__(self):
             return str(self)
+
+        def __mul__(self, other):
+            return int(self) * int(other)
+
+        def __truediv__(self, other):
+            return float(self) / float(other)
+
+        def __floordiv__(self, other):
+            return float(self) // float(other)
 
     def __init__(self):
         self.nodes = {}
@@ -165,6 +177,11 @@ class Graph(object):
         for node in self.nodes:
             node.visited = False
 
+    def reset_dist_prev(self):
+        for node in self.nodes.keys():
+            node.dist = -1
+            node.prev = None
+
     def strong_cc(self):
         self.topological_sort()
         self.reverse()
@@ -183,28 +200,29 @@ class Graph(object):
 
     def breadth_first_search(self, src):
         q = Queue()
-        color = True
-        self.dist = [-1] + ([-1] * self.num_nodes)
-        self.previous = [None] + ([None] * self.num_nodes)
-        self.dist[src] = 0
-        src.color = color
+        self.reset_visit_flags()
+        self.reset_dist_prev()
+        src.dist = 0
         q.enqueue(src)
-        while not q.full:
-            u = q.dequeue()
-            color = not u.color
-            for nbr in self.nodes[u]:
-                if self.dist[nbr] == -1:
-                    nbr.color = color
-                    q.enqueue(nbr)
-                    self.dist[nbr] = self.dist[u] + 1
-                    self.previous[nbr] = u
+        for node in self.nodes_list:
+            while q.full:
+                u = q.dequeue()
+                u.visited = True
+                for nbr in self.nodes[u]:
+                    if not nbr.visited:
+                        if nbr.dist == -1:
+                            q.enqueue(nbr)
+                            nbr.dist = u.dist + 1
+                            nbr.prev = u
+            if not node.visited:
+                q.enqueue(node)
 
     def reconstruct_shortest_path(self, src, u):
         result = []
         self.breadth_first_search(src)
         while u != src and u != None:
             result.append(u)
-            u = self.previous[u]
+            u = u.prev
         return reversed(result)
 
     def read(self):
@@ -234,7 +252,12 @@ class Graph(object):
     def solve(self):
         self.read()
         self.breadth_first_search(self.u)
-        return self.dist[self.v]
+        x = self.v
+        while x.prev != None:
+            x = x.prev
+        if x.dist == -1:
+            return x.dist
+        return self.v.dist
 
 
 if __name__ == '__main__':
