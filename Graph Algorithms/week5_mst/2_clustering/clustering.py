@@ -180,6 +180,18 @@ class Graph(object):
                 ds.union(edge[0], edge[1])
         return x
 
+    def solve(self):
+        x = sorted(self.kruskal_mst(), key=lambda x:self.weights[x])
+        d = 0
+        k = 0
+        for i in range(self.k):
+            new = self.weights[x.pop()]
+            k += 1
+            if k == 2:
+                return new
+            # if new > d:
+            #     d = new
+
     def euclid_distance(self, x, y):
         return ((y[0] - x[0]) ** 2 + (y[1] - x[1]) ** 2) ** 0.5
 
@@ -219,9 +231,7 @@ class Graph(object):
 if __name__ == '__main__':
     g = Graph()
     g.read()
-    a, b = g.kruskal_mst()
-    print(a)
-    print(b)
+    print("{:.12f}".format(g.solve()))
     # print("{:.12f}".format(g.solve()))
 
 # 2.828427124746
