@@ -32,34 +32,36 @@
 # array, and places all smaller (smaller than pivot)
 # to left of pivot and all greater elements to right
 # of pivot
-def partition(arr,low,high):
-	m = low-1	 # index of smaller element
-	pivot = arr[high]	 # pivot
+def partition(arr, low, high):
+    m = low-1	 # index of smaller element
+    pivot = arr[high]	 # pivot
 
-	for j in range(low , high):
+    for j in range(low, high):
 
-		# If current element is smaller than the pivot
-		if arr[j] < pivot:
+        # If current element is smaller than the pivot
+        if arr[j] < pivot:
 
-			# increment index of smaller element
-			m+=1
-			arr[m],arr[j] = arr[j],arr[m]
+            # increment index of smaller element
+            m += 1
+            arr[m], arr[j] = arr[j], arr[m]
 
-	arr[m+1],arr[high] = arr[high],arr[m+1]
-	return ( m+1 )
+    arr[m+1], arr[high] = arr[high], arr[m+1]
+    return (m+1)
 
 # Quick sort function
-def quickSort(arr,low,high):
-	if low < high:
 
-		# pi is partitioning index, arr[pi] is now
-		# at right place
-		pi = partition(arr,low,high)
 
-		# Separately sort elements before
-		# partition and after partition
-		quickSort(arr, low, pi-1)
-		quickSort(arr, pi+1, high)
+def quickSort(arr, low, high):
+    if low < high:
+
+        # pi is partitioning index, arr[pi] is now
+        # at right place
+        pi = partition(arr, low, high)
+
+        # Separately sort elements before
+        # partition and after partition
+        quickSort(arr, low, pi-1)
+        quickSort(arr, pi+1, high)
 
 
 if __name__ == '__main__':
