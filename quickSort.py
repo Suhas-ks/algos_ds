@@ -17,7 +17,7 @@
 #     if l < r:
 #         m = partition(A, l, r)
 #         quickSort(A, l, m)
-#         quickSort(A, m, r)
+#         quickSort(A, m+1, r) # this is done so as to not use the pivot element of the previous recursion level
 
 
 #######################################################3-WAY PARTITION#################################################################
@@ -44,7 +44,7 @@ def quickSort(A, l, r):
         return
     m1, m2 = partition3(A, l, r)
     quickSort(A, l, m1)
-    quickSort(A, m2+1, r)
+    quickSort(A, m2+1, r) # this is done so as to not use the equal elements of the previous recursion levels
 
 
 if __name__ == '__main__':
